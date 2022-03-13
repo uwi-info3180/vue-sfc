@@ -9,12 +9,6 @@ import AppFooter from '@/components/AppFooter.vue'
   <AppHeader></AppHeader>
 
   <main class="container">
-      <!-- <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav> -->
     <RouterView />
   </main>
 
