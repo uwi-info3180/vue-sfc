@@ -15,32 +15,42 @@ let movieRating =  ref(1);
 let editMode = ref(false);
 let currentlyEditing = ref(null);
 let addMovieModal = null;
+let loading = ref(false);
 
 
-const movies = ref([
-    {
-        title: 'The Lord of the Rings: The Fellowship of the Ring',
-        description: 'A meek Hobbit from the Shire and eight companions set out on a journey to destroy the powerful One Ring and save Middle-earth from the Dark Lord Sauron.',
-        rating: 5
-    },
-    {
-        title: 'The Bourne Identity',
-        description: 'A man is picked up by a fishing boat, bullet-riddled and suffering from amnesia, before racing to elude assassins and regain his memory.',
-        rating: 4
-    },
-    {
-        title: 'Wonder Woman',
-        description: 'When a pilot crashes and tells of conflict in the outside world, Diana, an Amazonian warrior in training, leaves home to fight a war, discovering her full powers and true destiny.',
-        rating: 5
-    },
-    {
-        title: 'Black Panther',
-        description: "T'Challa, heir to the hidden but advanced kingdom of Wakanda, must step forward to lead his people into a new future and must confront a challenger from his country's past.",
-        rating: 5
-    }
-]);
+const movies = ref([]);
 
 onMounted(() => {
+    loading.value = true;
+
+    // We are only doing this to mimic an AJAX request
+    // in a real application you would probably use the
+    // fetch api to make an actual AJAX request and get back a response.
+    setTimeout(() => {
+        movies.value = [{
+            title: 'The Lord of the Rings: The Fellowship of the Ring',
+            description: 'A meek Hobbit from the Shire and eight companions set out on a journey to destroy the powerful One Ring and save Middle-earth from the Dark Lord Sauron.',
+            rating: 5
+        },
+        {
+            title: 'The Bourne Identity',
+            description: 'A man is picked up by a fishing boat, bullet-riddled and suffering from amnesia, before racing to elude assassins and regain his memory.',
+            rating: 4
+        },
+        {
+            title: 'Wonder Woman',
+            description: 'When a pilot crashes and tells of conflict in the outside world, Diana, an Amazonian warrior in training, leaves home to fight a war, discovering her full powers and true destiny.',
+            rating: 5
+        },
+        {
+            title: 'Black Panther',
+            description: "T'Challa, heir to the hidden but advanced kingdom of Wakanda, must step forward to lead his people into a new future and must confront a challenger from his country's past.",
+            rating: 5
+        }];
+
+        loading.value = false;
+    }, 5000);
+
     addMovieModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#addMovieModal'));
 });
 
@@ -151,23 +161,16 @@ function clearFormFields() {
     </transition>
 
     <section class="movies">
-        <div v-if="!movies.length" class="no-movies">
+        <div v-if="!movies.length && loading == false" class="no-movies">
             You haven't added any movies.
         </div>
-        <!-- <div v-for="(movie, index) in movies" class="card">
-            <svg class="bd-placeholder-img card-img-top" width="100%" height="180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Image cap" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#868e96"></rect><text x="50%" y="50%" fill="#dee2e6" dy=".3em">Image</text></svg>
-            <div class="card-body">
-                <h5 class="card-title">{{ movie.title }}</h5>
-                <p class="card-text">{{ movie.description }}</p>
-                <p class="card-text text-center text-muted">
-                    <img src="@/assets/star.svg" alt="star" v-for="n in movie.rating" /> <br><small>({{ movie.rating + '/5' }} {{ (movie.rating > 1) ? 'stars' : 'star' }})</small>
-                </p>
+        <div v-if="loading">
+            <div class="d-flex justify-content-center">
+                <div class="spinner-border" style="width: 3rem; height: 3rem;" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
             </div>
-            <div class="card-footer text-muted d-flex">
-                <button @click="editMovie(index)" class="btn btn-primary btn-sm text-right"><img src="@/assets/pencil.svg" alt=""> Edit</button>
-                <button @click="removeMovie(index)" class="btn btn-danger btn-sm text-right"><img src="@/assets/trashcan.svg" alt=""> Remove</button>
-            </div>
-        </div> -->
+        </div>
         <MovieCard v-for="(movie, index) in movies"
                     v-bind:movie="movie"
                     v-bind:key="index"
