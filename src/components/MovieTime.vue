@@ -1,131 +1,149 @@
-<script>
+<script setup>
+import { ref, onMounted } from 'vue';
 import MovieCard from '@/components/MovieCard.vue';
 
-export default {
-   components: {MovieCard},
-   data() {
-    return {
-      message: 'Hello VueJS SFC!',
-      flashMessage: '',
-      displayFlash: false,
-      isSuccess: false,
-      alertSuccessClass: 'alert-success',
-      alertErrorClass: 'alert-danger',
-      movies: [
-            {
-                title: 'The Lord of the Rings: The Fellowship of the Ring',
-                description: 'A meek Hobbit from the Shire and eight companions set out on a journey to destroy the powerful One Ring and save Middle-earth from the Dark Lord Sauron.',
-                rating: 5
-            },
-            {
-                title: 'The Bourne Identity',
-                description: 'A man is picked up by a fishing boat, bullet-riddled and suffering from amnesia, before racing to elude assassins and regain his memory.',
-                rating: 4
-            },
-            {
-                title: 'Wonder Woman',
-                description: 'When a pilot crashes and tells of conflict in the outside world, Diana, an Amazonian warrior in training, leaves home to fight a war, discovering her full powers and true destiny.',
-                rating: 5
-            },
-            {
-                title: 'Black Panther',
-                description: "T'Challa, heir to the hidden but advanced kingdom of Wakanda, must step forward to lead his people into a new future and must confront a challenger from his country's past.",
-                rating: 5
-            }            
-      ],
-      movieTitle: '',
-      movieDescription: '',
-      movieRating: 1,
-      editMode: false,
-      currentlyEditing: null
-    }
-  },
-  methods: {
-    addMovie() {
-        // console.log('clicked')
-        this.disableEditing();
+const alertSuccessClass = 'alert-success';
+const alertErrorClass = 'alert-danger';
 
-        let movie = {
-            title: this.movieTitle,
-            description: this.movieDescription,
-            rating: parseInt(this.movieRating)
-        };
-        // console.log(movie);
-        this.movies.push(movie);
-        this.clearFormFields();
-        
-        this.displayFlash = true;
-        this.isSuccess = true;
-        this.flashMessage = 'Movie added successfully!';
+let message = ref("Hello VueJS SFC!")
+let flashMessage = ref('')
+let displayFlash = ref(false);
+let isSuccess = ref(false);
+let movieTitle =  ref('');
+let movieDescription = ref('');
+let movieRating =  ref(1);
+let editMode = ref(false);
+let currentlyEditing = ref(null);
+let addMovieModal = null;
+let loading = ref(false);
 
-        // Hide Bootstrap Modal
-        const addMovieModal = bootstrap.Modal.getInstance(document.querySelector('#addMovieModal'));
-        addMovieModal.hide();
 
-        let self = this;
-        setTimeout(function() { 
-            self.displayFlash = false; 
-            // console.log(self.displayFlash);
-        }, 3000);
-    },
-    editMovie(index) {
-        let movie = this.movies[index];
-        this.enableEditing();
+const movies = ref([]);
 
-        // console.log(movie.title);
-        this.movieTitle = movie.title;
-        this.movieDescription = movie.description;
-        this.movieRating = parseInt(movie.rating);
-        this.currentlyEditing = index;
+onMounted(() => {
+    loading.value = true;
 
-        // Show Bootstrap Modal
-        const addMovieModal = bootstrap.Modal.getInstance(document.querySelector('#addMovieModal'));
-        addMovieModal.show();
-    },
-    updateMovie() {
-        let movie = {
-            title: this.movieTitle,
-            description: this.movieDescription,
-            rating: parseInt(this.movieRating)
-        };
-        // console.log(movie);
-        this.movies[this.currentlyEditing] = movie;
+    // We are only doing this to mimic an AJAX request
+    // in a real application you would probably use the
+    // fetch api to make an actual AJAX request and get back a response.
+    setTimeout(() => {
+        movies.value = [{
+            title: 'The Lord of the Rings: The Fellowship of the Ring',
+            description: 'A meek Hobbit from the Shire and eight companions set out on a journey to destroy the powerful One Ring and save Middle-earth from the Dark Lord Sauron.',
+            rating: 5
+        },
+        {
+            title: 'The Bourne Identity',
+            description: 'A man is picked up by a fishing boat, bullet-riddled and suffering from amnesia, before racing to elude assassins and regain his memory.',
+            rating: 4
+        },
+        {
+            title: 'Wonder Woman',
+            description: 'When a pilot crashes and tells of conflict in the outside world, Diana, an Amazonian warrior in training, leaves home to fight a war, discovering her full powers and true destiny.',
+            rating: 5
+        },
+        {
+            title: 'Black Panther',
+            description: "T'Challa, heir to the hidden but advanced kingdom of Wakanda, must step forward to lead his people into a new future and must confront a challenger from his country's past.",
+            rating: 5
+        }];
 
-        this.clearFormFields();
-        this.currentlyEditing = null;
+        loading.value = false;
+    }, 5000);
 
-        this.displayFlash = true;
-        this.isSuccess = true;
-        this.flashMessage = 'Movie updated successfully!';
+    addMovieModal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#addMovieModal'));
+});
 
-        // Hide Bootstrap Modal
-        const addMovieModal = bootstrap.Modal.getInstance(document.querySelector('#addMovieModal'));
-        addMovieModal.hide();
-    },
-    removeMovie(index) {
-        this.displayFlash = true;
-        this.isSuccess = false;
-        this.flashMessage = 'Movie deleted!';
-        this.movies.splice(index, 1);
+function addMovie() {
+    disableEditing();
 
-        let self = this;
-        setTimeout(function() { 
-            self.displayFlash = false; 
-            // console.log(self.displayFlash);
-        }, 3000);
-    },
-    enableEditing() {
-        this.editMode = true;
-    },
-    disableEditing() {
-        this.editMode = false;
-    },
-    clearFormFields() {
-        this.movieTitle = '';
-        this.movieDescription = '';
-        this.movieRating = 1;
-    }
-  } 
+    let movie = {
+        title: movieTitle.value,
+        description: movieDescription.value,
+        rating: parseInt(movieRating.value)
+    };
+    // console.log(movie);
+    movies.value.push(movie);
+    clearFormFields();
+
+    displayFlash.value = true;
+    isSuccess.value = true;
+    flashMessage.value = 'Movie added successfully!';
+
+    // Hide Bootstrap Modal
+    addMovieModal.hide();
+
+    // let self = this;
+    setTimeout(function() {
+        displayFlash.value = false;
+        // console.log(self.displayFlash);
+    }, 3000);
+}
+
+function editMovie(index) {
+    let movie = movies.value[index];
+    enableEditing();
+
+    movieTitle.value = movie.title;
+    movieDescription.value = movie.description;
+    movieRating.value = parseInt(movie.rating);
+    currentlyEditing.value = index;
+
+    // Show Bootstrap Modal
+    addMovieModal.show();
+}
+
+function updateMovie() {
+    let movie = {
+        title: movieTitle.value,
+        description: movieDescription.value,
+        rating: parseInt(movieRating.value)
+    };
+    // console.log(movie);
+    movies.value[currentlyEditing.value] = movie;
+
+    clearFormFields();
+    currentlyEditing.value = null;
+
+    displayFlash.value = true;
+    isSuccess.value = true;
+    flashMessage.value = 'Movie updated successfully!';
+
+    // Hide Bootstrap Modal
+    addMovieModal.hide();
+}
+
+function displayModal() {
+    clearFormFields();
+    disableEditing();
+
+    // Show modal
+    addMovieModal.show();
+}
+
+function removeMovie(index) {
+    displayFlash.value = true;
+    isSuccess.value = false;
+    flashMessage.value = 'Movie deleted!';
+    movies.value.splice(index, 1);
+
+    setTimeout(function() {
+        displayFlash.value = false;
+    }, 3000);
+}
+
+function enableEditing() {
+    editMode.value = true;
+}
+
+function disableEditing() {
+    editMode.value = false;
+}
+
+function clearFormFields() {
+    movieTitle.value = '';
+    movieDescription.value = '';
+    movieRating.value = 1;
 }
 </script>
 
@@ -133,7 +151,7 @@ export default {
     <section class="jumbotron p-5 mb-4 bg-light rounded-3 text-center">
         <h1>Movie Time</h1>
         <p>{{ message }}</p>
-        <button class="btn btn-primary btn-lg" @click="disableEditing" data-bs-toggle="modal" data-bs-target="#addMovieModal">Add a Movie</button>
+        <button class="btn btn-primary btn-lg" @click="displayModal">Add a Movie</button>
     </section>
 
     <transition name="fade">
@@ -143,29 +161,21 @@ export default {
     </transition>
 
     <section class="movies">
-        <div v-if="!movies.length" class="no-movies">
+        <div v-if="!movies.length && loading == false" class="no-movies">
             You haven't added any movies.
         </div>
-        <!-- <div v-for="(movie, index) in movies" class="card">
-            <svg class="bd-placeholder-img card-img-top" width="100%" height="180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Image cap" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#868e96"></rect><text x="50%" y="50%" fill="#dee2e6" dy=".3em">Image</text></svg>
-            <div class="card-body">
-                <h5 class="card-title">{{ movie.title }}</h5>
-                <p class="card-text">{{ movie.description }}</p>
-                <p class="card-text text-center text-muted">
-                    <img src="@/assets/star.svg" alt="star" v-for="n in movie.rating" /> <br><small>({{ movie.rating + '/5' }} {{ (movie.rating > 1) ? 'stars' : 'star' }})</small>
-                </p>
+        <div v-if="loading">
+            <div class="d-flex justify-content-center">
+                <div class="spinner-border" style="width: 3rem; height: 3rem;" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
             </div>
-            <div class="card-footer text-muted d-flex">
-                <button @click="editMovie(index)" class="btn btn-primary btn-sm text-right"><img src="@/assets/pencil.svg" alt=""> Edit</button>
-                <button @click="removeMovie(index)" class="btn btn-danger btn-sm text-right"><img src="@/assets/trashcan.svg" alt=""> Remove</button>
-            </div>
-        </div> -->
-        <MovieCard v-for="(movie, index) in movies" 
+        </div>
+        <MovieCard v-for="(movie, index) in movies"
                     v-bind:movie="movie"
-                    v-bind:key="index" 
-                    v-on:edit="editMovie(index)" 
-                    v-on:remove="removeMovie(index)">
-        </MovieCard>
+                    v-bind:key="index"
+                    v-on:edit="editMovie(index)"
+                    v-on:remove="removeMovie(index)" />
     </section>
 
     <div id="addMovieModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">

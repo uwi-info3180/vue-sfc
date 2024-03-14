@@ -17,20 +17,15 @@
     </div>
 </template>
 
-<script>
-export default {
-    props: ['movie'],
-    data() {
-        return {
-        }
-    },
-    methods: {
-        editMovie() {
-            this.$emit('edit');
-        },
-        removeMovie() {
-            this.$emit('remove');
-        }
-    }
+<script setup>
+const props = defineProps(['movie'])
+const emit = defineEmits(['edit', 'remove'])
+
+function editMovie() {
+    emit('edit')
+}
+
+function removeMovie() {
+    emit('remove')
 }
 </script>
