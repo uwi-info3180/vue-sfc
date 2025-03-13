@@ -111,6 +111,12 @@ function updateMovie() {
 
     // Hide Bootstrap Modal
     addMovieModal.hide();
+
+    // let self = this;
+    setTimeout(function() {
+        displayFlash.value = false;
+        // console.log(self.displayFlash);
+    }, 3000);
 }
 
 function displayModal() {
